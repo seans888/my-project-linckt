@@ -1,8 +1,16 @@
 <!doctype html>
 <html>
 	<head>
-	<title>Licknt SCM Login</title>
+
+	<title>Linckt SCM Login</title>
 	<link rel="stylesheet" type="text/css" href="./css/loginstyle.css"/>
+			<style>
+html, body {
+   
+	 background: #FFFFCC;
+    
+}
+</style>
 	</head>
 	
 	<body>
@@ -22,7 +30,11 @@
             </div>
         </form>
 	 </div>
-	 
+	 <?php
+	 $message;
+	 if(!empty($message))
+	 echo "<h3>".$message."</h3>";
+	 ?>
 	</body>
 </html>
 
@@ -35,36 +47,38 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 	$password = /*preg_replace('#[^A-Za-z0-9]#i', '',*/ $_POST["password"];
 	/*);*/
 	//$md5password_login = md5($password);
-    $sql = "SELECT u_firstname, u_employeenum, id, u_usertype FROM users WHERE u_username='$username' AND u_password='$password' LIMIT 1";
+    $sql = "SELECT ufirstname, id, usertype, ulastname, username FROM users WHERE username='$username' AND upassword='$password' LIMIT 1";
 	$select = mysql_query($sql, $con);
 
 	$userCount = mysql_num_rows($select);
 	if ($userCount == 1) {
-		while($row = mysql_fetch_array($select)){ 
-             $id = $row["id"];
-			 $firstname = $row["u_firstname"];
-			 $empnun = $row["u_employeenum"];
-			 $usertype = $row["u_usertype"];
+		while($row = mysql_fetch_assoc($select)){ //fetch_assoc
+			extract($row);
+			 
 	}	
 		session_start();
 		 $_SESSION['id'] = $id;
 		 $_SESSION['username'] = $username;
-		 $_SESSION['firstname'] = $firstname;
-		 $_SESSION['empnum'] = $empnum;
+		 $_SESSION['firstname'] = $ufirstname;
+		 $_SESSION['lastname'] = $ulastname;
+		 $_SESSION['id'] = $id;
 		 $_SESSION['usertype'] = $usertype;
 
-		 if($usertype='admin'){
+		 if($usertype=='admin'){
 		  header('Location: ./admin/home.php');
 		  }else
-		  if($usertype='regular'){
-		  header('Location: ./linckt/home.php');
+		  if($usertype=='lincktemp'){
+		  header('Location: ./regular/home.php');
 		  }else
-		  if($usertype='supplier'){
+		  if($usertype=='supplier'){
 		  header('Location: ./supplier/home.php');
+		  }
+		  if($usertype=='client'){
+		  header('Location: ./client/home.php');
 		  }
          exit();
 		} else {
-		echo 'That information is incorrect, try again';
+		$message = 'That information is incorrect, try again';
 		exit();
 	}
 }
